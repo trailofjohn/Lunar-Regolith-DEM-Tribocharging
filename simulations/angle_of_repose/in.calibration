@@ -1,0 +1,182 @@
+# =============================================================================
+# LIGGGHTS Angle-of-Repose (AoR) Calibration Script — POLISHED PRODUCTION
+# =============================================================================
+#
+# Purpose: Calibrate SJKR cohesion energy density for LMS-1 lunar regolith
+#          simulant by matching the simulated angle of repose to 38.3 deg.
+#
+# PARTICLE COUNT PARAMETERIZATION:
+#   This script is fully parameterized. The default particle count is 5,000 (NP).
+#   To run for other counts (e.g. 10,000 particles), override it via:
+#     liggghts -v NP 10000 < in.aor
+#
+# Method: Lift-cylinder test
+#   1. Fill a 40 mm diameter cylinder with NP particles (d = 1 mm calibration size)
+#   2. Allow particles to settle under Earth gravity (flat, horizontal plate)
+#   3. Slowly lift the cylinder vertically at 0.05 m/s
+#   4. Particles collapse into a conical pile on the horizontal plate
+#   5. Measure the resulting angle of repose
+#
+# Contact Model: Hertz-Mindlin + SJKR Cohesion
+# Geometry: Cylinder (40 mm dia x 80 mm tall); Plate (200 mm x 200 mm)
+#
+# =============================================================================
+
+# --- Initialization ---
+atom_style      granular
+atom_modify     map array
+boundary        f f f
+newton          off
+communicate     single vel yes
+units           si
+
+# --- Domain ---
+# Plate centered at origin, horizontal (XY plane), gravity in -Z
+region          domain block -0.12 0.12 -0.12 0.12 -0.002 0.20
+create_box      2 domain
+
+# =============================================================================
+# Variables (Override via command line)
+# =============================================================================
+variable        NP index 5000          # Number of particles (Default: 5000)
+variable        COH index 285000       # Calibrated Cohesion (J/m3)
+variable        ROLL index 0.1         # Rolling friction coefficient
+variable        SEED1 index 15485863
+variable        SEED2 index 67867979
+variable        SEED3 index 32452843
+variable        RUNID index seed1
+
+# --- Neighbor lists ---
+neighbor        0.002 bin
+neigh_modify    delay 0
+
+# =============================================================================
+# Material Properties
+# =============================================================================
+# Type 1: Calibration particles (d = 1mm, rho = 2920 kg/m3)
+# Type 2: Wall material (steel cylinder + plate)
+
+# Young's modulus [Pa]
+fix             m1 all property/global youngsModulus peratomtype 2e7 5e7
+
+# Poisson ratio [-]
+fix             m2 all property/global poissonsRatio peratomtype 0.25 0.30
+
+# Coefficient of restitution [-]
+fix             m3 all property/global coefficientRestitution peratomtypepair 2 0.5 0.5 0.5 0.5
+
+# Coefficient of sliding friction [-]
+fix             m4 all property/global coefficientFriction peratomtypepair 2 0.5 0.5 0.5 0.5
+
+# SJKR cohesion energy density [J/m3]
+fix             m6 all property/global cohesionEnergyDensity peratomtypepair 2 ${COH} 0 0 0
+
+# Coefficient of rolling friction [-]
+fix             m5 all property/global coefficientRollingFriction peratomtypepair 2 ${ROLL} ${ROLL} ${ROLL} ${ROLL}
+
+# =============================================================================
+# Contact Model Configuration
+# =============================================================================
+pair_style      gran model hertz tangential history cohesion sjkr rolling_friction epsd2
+pair_coeff      * *
+
+# --- Timestep ---
+# Highly stable small timestep for physical consistency under high cohesion
+timestep        5e-7
+
+# =============================================================================
+# Mesh Import
+# =============================================================================
+# Cylinder sits on the plate at Z=0
+fix             cyl_mesh all mesh/surface file mesh/cylinder.stl type 2 scale 0.001
+# Flat horizontal plate at Z=0
+fix             plate_mesh all mesh/surface file mesh/plate.stl type 2 scale 0.001
+
+# Combined granular wall
+fix             granwalls all wall/gran model hertz tangential history &
+                cohesion sjkr rolling_friction epsd2 &
+                mesh n_meshes 2 meshes cyl_mesh plate_mesh
+
+# =============================================================================
+# Particle Insertion
+# =============================================================================
+region          insert_region cylinder z 0.0 0.0 0.019 0.001 0.050
+
+# Particle template: d = 1 mm (calibration size)
+fix             pts1 all particletemplate/sphere ${SEED1} atom_type 1 &
+                density constant 2920 radius constant 0.5e-3
+
+# Particle distribution (monodisperse)
+fix             pdd1 all particledistribution/discrete ${SEED2} 1 pts1 1.0
+
+# Insert NP particles inside the cylinder
+fix             ins all insert/pack seed ${SEED3} distributiontemplate pdd1 &
+                maxattempt 200 insert_every once overlapcheck yes &
+                all_in yes vel constant 0.0 0.0 0.0 &
+                region insert_region particles_in_region ${NP}
+
+# =============================================================================
+# Integration and Physics
+# =============================================================================
+fix             grv all gravity 9.81 vector 0.0 0.0 -1.0
+fix             integrate all nve/sphere
+
+# Viscous damping to stabilize insertion energy during initial settling
+fix             stab all viscous 0.0001
+fix             ts_check all check/timestep/gran 1000 0.2 0.2
+
+# =============================================================================
+# Output Configuration
+# =============================================================================
+thermo_style    custom step atoms ke
+thermo          5000
+thermo_modify   lost ignore norm no
+
+# Create dump directory
+shell           mkdir -p dump/${RUNID}
+
+# VTK dump for ParaView visualization
+dump            dmp all custom/vtk 10000 dump/${RUNID}/aor_*.vtk &
+                id type x y z vx vy vz radius
+
+# =============================================================================
+# Execution Phases
+# =============================================================================
+
+# Phase 1: Particle Insertion and Settle (0.5 s = 1,000,000 steps)
+run             1000000
+unfix           stab
+
+# Phase 2: Slowly Lift the Cylinder (1.0 s = 2,000,000 steps)
+# Cylinder moves vertically at 0.05 m/s (50 mm/s) to 50mm clearance height
+unfix           granwalls
+fix             move_cyl all move/mesh mesh cyl_mesh linear 0.0 0.0 0.05
+
+# Rebuild wall with moving cylinder + static plate
+fix             granwalls all wall/gran model hertz tangential history &
+                cohesion sjkr rolling_friction epsd2 &
+                mesh n_meshes 2 meshes cyl_mesh plate_mesh
+
+run             2000000
+
+# Phase 3: Pile Relaxation & Settle (0.5 s = 1,000,000 steps)
+unfix           granwalls
+unfix           move_cyl
+
+# Only plate needed for pile relaxation
+fix             granwalls all wall/gran model hertz tangential history &
+                cohesion sjkr rolling_friction epsd2 &
+                mesh n_meshes 1 meshes plate_mesh
+
+run             1000000
+
+# =============================================================================
+# Final Position Output for Post-Processing Analysis
+# =============================================================================
+dump            final_dump all custom 1 dump/${RUNID}/final_positions.txt &
+                id type x y z radius
+run             0
+
+print           "=== ANGLE OF REPOSE SIMULATION COMPLETE ==="
+print           "Total physical simulation time: 2.0 s"
+print           "Next step: run 'python3 post/measure_aor.py' to fit profile"

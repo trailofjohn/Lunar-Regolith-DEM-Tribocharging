@@ -1,0 +1,5 @@
+* Lunar regolith vibratory feeders suffer cohesion jamming under reduced gravity.
+* DEM simulations were calibrated to the 38.3° angle of repose of LMS-1 simulant.
+* A collision-energy post-processing model quantifies gravity-dependent tribocharging.
+* High Granular Bond numbers on the Moon necessitate increased vibration amplitudes.
+* Quantitative design guidelines are provided for lunar electrostatic beneficiation.

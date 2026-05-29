@@ -1,0 +1,57 @@
+# =============================================================================
+# PUBLICATION-GRADE GITIGNORE FOR LUNAR REGOLITH BENEFICIATION DEM
+# =============================================================================
+
+# --- Python Bytecode & Environments ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# --- LIGGGHTS DEM Binary & Trajectory Output Files ---
+# Ignore raw dumps and trajectories (typically gigabytes of disk space)
+**/dump/
+**/post/dump/
+**/results/
+*.data
+*.bin
+*.npz
+*.log
+log.liggghts
+
+# --- LaTeX Compiler Artifacts ---
+# Ignore standard LaTeX build and temporary files
+*.aux
+*.log
+*.toc
+*.out
+*.bbl
+*.blg
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.pdfsync
+*.alg
+*.ilg
+*.ind
+*.ist
+*.acn
+*.acr
+*.glo
+*.gls
+
+# --- Local Editor & System Configurations ---
+.DS_Store
+.vscode/
+.idea/
+.obsidian/
+.ipynb_checkpoints/
+
+# --- Research Attic Archive ---
+# Keep local copy of historical/messy iterations, but exclude from Git
+research_attic/
+archive/
+attic/
+clean_repository.py
+*.py.bak
