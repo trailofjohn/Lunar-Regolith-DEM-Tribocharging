@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # =============================================================================
 # plot_publication.py — PUBLICATION-GRADE HIGH-TECH SCIENTIFIC JOURNAL FIGURES
-# Sleek cohesive color system: Navy Blue (Earth), Rust Red (Moon Cohesive Jammed),
+# Cohesive color system: Navy Blue (Earth), Rust Red (Moon Cohesive Jammed),
 # Emerald Teal (Moon Fluidized Active Flow).
 # =============================================================================
 
@@ -287,11 +287,11 @@ def generate_composite_flow_dynamics():
     print(f"[+] Saved composite flow dynamics figure to: {png_path} and {pdf_path}")
 
 # =============================================================================
-# Figure 3: Triboelectric Charging & Collision Mechanics (3 Panels)
+# Figure 3: Triboelectric Charging & Collision Mechanics (2 Panels, side-by-side)
 # =============================================================================
 def generate_composite_charging():
     print("Generating Composite Figure 3 (Triboelectric Charging)...")
-    fig, axes = plt.subplots(1, 3, figsize=(14, 4.2))
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
     
     # --------------------------------------------------------
     # Panel (a): Transient mean charge history
@@ -360,12 +360,23 @@ def generate_composite_charging():
     else:
         ax_b.text(0.5, 0.5, 'Collision energy data\nnot found', ha='center', va='center', color=C_TEXT)
 
-    # --------------------------------------------------------
-    # Panel (c): Parametric Q/M ratio vs. Amplitude (Bar Chart)
-    # --------------------------------------------------------
-    ax_c = axes[2]
-    summary_path = os.path.join(results_dir, "charging_summary.csv")
+    plt.tight_layout()
     
+    png_path = os.path.join(output_dir, 'fig_composite_charging.png')
+    pdf_path = os.path.join(output_dir, 'fig_composite_charging.pdf')
+    plt.savefig(png_path, dpi=300, bbox_inches='tight')
+    plt.savefig(pdf_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"[+] Saved composite charging figure to: {png_path} and {pdf_path}")
+
+# =============================================================================
+# Figure 4: Standalone Parametric final charge-to-mass ratio (Q/M)
+# =============================================================================
+def generate_parametric_qm():
+    print("Generating Figure 4 (Parametric Q/M Ratio)...")
+    fig, ax = plt.subplots(figsize=(6, 4.5))
+    
+    summary_path = os.path.join(results_dir, "charging_summary.csv")
     if os.path.exists(summary_path):
         df = pd.read_csv(summary_path)
         earth = df[df['gravity'] == 'Earth']
@@ -377,7 +388,7 @@ def generate_composite_charging():
             
             # Clean flat bars without edge outlines
             if len(earth) > 0:
-                ax_c.bar(x[:len(earth)] - width/2, earth['qm_ratio_ucg_final'], width, 
+                ax.bar(x[:len(earth)] - width/2, earth['qm_ratio_ucg_final'], width, 
                        yerr=earth['qm_std_ucg_final'], capsize=3, 
                        error_kw={'alpha':0.5, 'lw':0.7, 'ecolor': C_TEXT},
                        label='Earth (9.81 m/s$^2$)', color=C_EARTH, edgecolor='none', zorder=3)
@@ -388,38 +399,39 @@ def generate_composite_charging():
                 for idx, row in enumerate(moon.itertuples()):
                     # We plot each bar individually to support our premium multi-color theme
                     bar_x = x[idx] + width/2
-                    ax_c.bar(bar_x, row.qm_ratio_ucg_final, width,
+                    ax.bar(bar_x, row.qm_ratio_ucg_final, width,
                            yerr=row.qm_std_ucg_final, capsize=3,
                            error_kw={'alpha':0.5, 'lw':0.7, 'ecolor': C_TEXT},
                            color=moon_colors[idx], edgecolor='none', zorder=3,
                            label='Moon (1.62 m/s$^2$)' if idx == 0 else "")
             
             # Ultra-clean grey band for Trigwell experimental benchmark range
-            ax_c.axhspan(0.45, 0.55, color='#F1F5F9', alpha=0.7, label='Trigwell Target Range', zorder=1)
-            ax_c.axhline(y=0.5, color=C_TARGET, linestyle='--', lw=1.2, alpha=0.8, zorder=2)
+            ax.axhspan(0.45, 0.55, color='#F1F5F9', alpha=0.7, label='Trigwell Target Range', zorder=1)
+            ax.axhline(y=0.5, color=C_TARGET, linestyle='--', lw=1.2, alpha=0.8, zorder=2)
             
-            finalize_plot(ax_c, '(c) Final Charge-to-Mass Ratio ($Q/M$)', 'Vibration Amplitude (mm)', r'Average $Q/M$ ($\mu$C/g)')
+            finalize_plot(ax, 'Final Charge-to-Mass Ratio ($Q/M$)', 'Vibration Amplitude (mm)', r'Average $Q/M$ ($\mu$C/g)')
             
             labels = earth['amplitude'].tolist() if len(earth) > 0 else moon['amplitude'].tolist()
-            ax_c.set_xticks(x[:len(labels)])
-            ax_c.set_xticklabels(labels)
-            ax_c.set_ylim(0, 1.4)
-            ax_c.legend(frameon=True, loc='upper left', facecolor='white', framealpha=0.9, edgecolor='none')
+            ax.set_xticks(x[:len(labels)])
+            ax.set_xticklabels(labels)
+            ax.set_ylim(0, 1.4)
+            ax.legend(frameon=True, loc='upper left', facecolor='white', framealpha=0.9, edgecolor='none')
     else:
-        ax_c.text(0.5, 0.5, 'charging_summary.csv\nnot found', ha='center', va='center', color=C_TEXT)
+        ax.text(0.5, 0.5, 'charging_summary.csv\nnot found', ha='center', va='center', color=C_TEXT)
 
     plt.tight_layout()
     
-    png_path = os.path.join(output_dir, 'fig_composite_charging.png')
-    pdf_path = os.path.join(output_dir, 'fig_composite_charging.pdf')
+    png_path = os.path.join(output_dir, 'fig_parametric_qm.png')
+    pdf_path = os.path.join(output_dir, 'fig_parametric_qm.pdf')
     plt.savefig(png_path, dpi=300, bbox_inches='tight')
     plt.savefig(pdf_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"[+] Saved composite charging figure to: {png_path} and {pdf_path}")
+    print(f"[+] Saved standalone parametric Q/M figure to: {png_path} and {pdf_path}")
 
 if __name__ == "__main__":
     print("[+] Starting high-tech premium figure rebuild...")
     generate_composite_calibration()
     generate_composite_flow_dynamics()
     generate_composite_charging()
+    generate_parametric_qm()
     print("[+] All publication figures rebuilt successfully to vector PDF and premium PNG standards.")
