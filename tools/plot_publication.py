@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # =============================================================================
 # plot_publication.py — PUBLICATION-GRADE HIGH-TECH SCIENTIFIC JOURNAL FIGURES
-# Highly sophisticated desaturated Nature-grade color palette: Muted Steel Blue,
-# Soft Dusty Terracotta, and Gentle Sage Teal. Highly gentle on the human eye.
+# Minimalist, ultra-elegant Nature-grade palette: Slate Charcoal, Cool Grey, 
+# and a single Muted Slate Blue accent for active flow. Highly gentle on the eye.
 # =============================================================================
 
 import numpy as np
@@ -20,14 +20,14 @@ results_dir = '/home/neo/liggghts/project/data'
 os.makedirs(output_dir, exist_ok=True)
 
 # --- Nature/Science-grade Muted Sophisticated Color Palette ---
-C_TEXT     = '#2D3142'  # Deep Slate/Charcoal (soft dark text)
-C_EARTH    = '#3D5A80'  # Muted Steel Blue (Terrestrial baseline)
-C_MOON     = '#C08272'  # Soft Dusty Terracotta/Rose (Cohesive jammed lunar)
-C_FLUID    = '#6C9A8B'  # Gentle Sage Teal (Active fluidized lunar flow)
-C_TARGET   = '#B56557'  # Soft Muted Brick/Crimson (Subtle benchmark/indicator)
-C_GRID     = '#F4F5F6'  # Almost invisible soft grey for gridlines
-C_SPINE    = '#D3D5D7'  # Soft titanium grey for axes spines
-C_BG_ZONE  = '#FAFBFB'  # Extremely soft background tint
+C_TEXT     = '#1E293B'  # Deep Charcoal/Slate (crisp readable text)
+C_EARTH    = '#2D3748'  # Elegant Slate Charcoal (Terrestrial baseline)
+C_MOON     = '#718096'  # Neutral Cool Grey (Cohesive jammed lunar)
+C_FLUID    = '#4B7EB0'  # Muted Slate Blue (Active fluidized lunar flow)
+C_TARGET   = '#4A5568'  # Soft Charcoal (Subtle benchmark/indicator line)
+C_GRID     = '#F8FAFC'  # Softest grey for gridlines
+C_SPINE    = '#E2E8F0'  # Soft border line color
+C_BG_ZONE  = '#F8FAFC'  # Extremely soft background tint
 
 # --- Premium Global Matplotlib Styling ---
 plt.style.use('seaborn-v0_8-white')
@@ -106,7 +106,7 @@ def generate_composite_calibration():
         '5k Particles': '/home/neo/liggghts/project/research_attic/Angle of Repose/AoR_Calibration_Study/run_D1.0_S1/dump/final_positions.txt',
         '20k Particles': '/home/neo/liggghts/project/research_attic/Angle of Repose/Calibration_20k/dump/seed_1/final_positions.txt'
     }
-    colors = ['#98C1D9', '#3D5A80']  # Muted soft sky blue vs desaturated steel blue
+    colors = ['#94A3B8', '#334155']  # Soft titanium gray vs elegant slate charcoal
     
     has_a = False
     for i, (label, path) in enumerate(paths.items()):
@@ -340,7 +340,7 @@ def generate_composite_charging():
                     
                     log_energies = np.log10(energies)
                     if len(log_energies) > 10000:
-                        np.random.seed(42)  # Deterministic downsampling
+                        np.random.seed(42)  # Downsampling for performance
                         log_energies = np.random.choice(log_energies, 10000, replace=False)
                     kde = gaussian_kde(log_energies)
                     
