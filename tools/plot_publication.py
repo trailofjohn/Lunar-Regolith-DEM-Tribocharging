@@ -3,6 +3,7 @@
 # plot_publication.py — PUBLICATION-GRADE HIGH-TECH SCIENTIFIC JOURNAL FIGURES
 # Minimalist, ultra-elegant Nature-grade palette: Slate Charcoal, Cool Grey, 
 # and a single Muted Slate Blue accent for active flow. Highly gentle on the eye.
+# Implements physical rolling-average smoothing to eliminate ink-splatter noise.
 # =============================================================================
 
 import numpy as np
@@ -215,7 +216,17 @@ def generate_composite_flow_dynamics():
         data_path = os.path.join(results_dir, f"{case}_data.npz")
         if os.path.exists(data_path):
             data = np.load(data_path)
-            ax_a.plot(data['times'], data['cn_history'], label=label, color=color, linestyle=ls, lw=1.6, zorder=3)
+            times = data['times']
+            cn = data['cn_history']
+            
+            # Centered rolling average to display clear physical trend
+            cn_smooth = pd.Series(cn).rolling(window=100, min_periods=1, center=True).mean().to_numpy()
+            
+            # Faint background raw envelope
+            ax_a.plot(times, cn, color=color, alpha=0.10, lw=0.5, zorder=2)
+            
+            # Clean, bold physical trend line
+            ax_a.plot(times, cn_smooth, label=label, color=color, linestyle=ls, lw=2.0, zorder=3)
             has_data = True
             
     if has_data:
