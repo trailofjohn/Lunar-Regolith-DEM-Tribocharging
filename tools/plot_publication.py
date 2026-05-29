@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # =============================================================================
-# plot_publication.py — PUBLICATION-GRADE NATURE-STYLE ASR JOURNAL FIGURES
-# Overhauled using Nicolas Rougier's master scientific visualization principles
+# plot_publication.py — PUBLICATION-GRADE HIGH-TECH SCIENTIFIC JOURNAL FIGURES
+# Ultra-modern sleek layout: Midnight Blue + Titanium Slate Grey + Pure White Canvas
 # =============================================================================
 
 import numpy as np
@@ -18,15 +18,14 @@ results_dir = '/home/neo/liggghts/project/data'
 
 os.makedirs(output_dir, exist_ok=True)
 
-# --- Premium Nature-Style scientific color palette ---
-C_TEXT     = '#2D3748'  # Slate Charcoal (replaces harsh pure black)
-C_EARTH    = '#3B7A94'  # Muted Teal (Earth baseline)
-C_MOON     = '#C68B59'  # Muted Copper (Lunar environment)
-C_TARGET   = '#8B8680'  # Muted Warm Grey (Trigwell baseline target line)
-C_CREAM    = '#F0EAE1'  # Soft Sand Cream (shaded Trigwell benchmark area)
-C_GRID     = '#EDF2F7'  # Faint blue-grey grid lines
-C_FLOW_BG  = '#E6FFFA'  # Extremely faint mint/sage for fluidized zone (alpha=0.45)
-C_JAM_BG   = '#FAF0F0'  # Extremely faint dusty rose for jammed zone (alpha=0.45)
+# --- Sleek High-Tech Color Tokens ---
+C_TEXT     = '#1E293B'  # Sleek Charcoal/Slate-900 (crisp high-contrast text)
+C_EARTH    = '#0A2540'  # Deep Midnight Blue (Stripe-grade premium dark navy)
+C_MOON     = '#64748B'  # Slate Grey (Titanium/Lunar grey)
+C_TARGET   = '#EF4444'  # Crimson Red (crisp indicator/benchmark)
+C_GRID     = '#F1F5F9'  # Very soft, clean slate-100 grid lines
+C_SPINE    = '#CBD5E1'  # Clean border line color
+C_BG_ZONE  = '#F8FAFC'  # Very soft grey fill for threshold zones
 
 # --- Premium Global Matplotlib Styling ---
 plt.style.use('seaborn-v0_8-white')
@@ -41,7 +40,7 @@ plt.rcParams.update({
     'ytick.labelsize': 10,
     'legend.fontsize': 9.5,
     'axes.linewidth': 0.6,
-    'axes.edgecolor': '#A0AEC0',
+    'axes.edgecolor': C_SPINE,
     'axes.labelcolor': C_TEXT,
     'text.color': C_TEXT,
     'xtick.color': C_TEXT,
@@ -73,22 +72,22 @@ def crop_and_load_image(img_path):
         return None
 
 def finalize_plot(ax, title, xlabel, ylabel):
-    """Apply unified organic styling, hiding harsh spines and softening gridlines."""
+    """Apply modern clean spines and thin gridlines."""
     ax.set_title(title, fontweight='bold', pad=12, color=C_TEXT)
     ax.set_xlabel(xlabel, labelpad=6, color=C_TEXT)
     ax.set_ylabel(ylabel, labelpad=6, color=C_TEXT)
     
-    # Hide top and right spines
+    # Clean modern spines
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['left'].set_linewidth(0.6)
     ax.spines['bottom'].set_linewidth(0.6)
-    ax.spines['left'].set_color('#A0AEC0')
-    ax.spines['bottom'].set_color('#A0AEC0')
+    ax.spines['left'].set_color(C_SPINE)
+    ax.spines['bottom'].set_color(C_SPINE)
     
-    # Faint grid lines placed behind plots
+    # Crisp thin grid
     ax.grid(True, linestyle='-', color=C_GRID, linewidth=0.5, zorder=0)
-    ax.tick_params(colors='#4A5568', width=0.6, length=4)
+    ax.tick_params(colors=C_TEXT, width=0.6, length=4)
 
 # =============================================================================
 # Figure 1: Cohesion Calibration & Repose Pile Convergence (3 Panels)
@@ -105,7 +104,7 @@ def generate_composite_calibration():
         '5k Particles': '/home/neo/liggghts/project/research_attic/Angle of Repose/AoR_Calibration_Study/run_D1.0_S1/dump/final_positions.txt',
         '20k Particles': '/home/neo/liggghts/project/research_attic/Angle of Repose/Calibration_20k/dump/seed_1/final_positions.txt'
     }
-    colors = ['#81B2C9', '#2E5B88']
+    colors = ['#38BDF8', '#0284C7']  # Clean modern cool blues
     
     has_a = False
     for i, (label, path) in enumerate(paths.items()):
@@ -127,14 +126,14 @@ def generate_composite_calibration():
                 x, y, z = data[indices, 0], data[indices, 1], data[indices, 2]
                 r = np.sqrt(x**2 + y**2) * 1000  # to mm
                 z_mm = z * 1000
-                ax_a.scatter(r, z_mm, s=1.8, alpha=0.3, color=colors[i], label=label, rasterized=True, zorder=3)
+                ax_a.scatter(r, z_mm, s=1.5, alpha=0.3, color=colors[i], label=label, rasterized=True, zorder=3)
                 has_a = True
                 
     # Add target slope line (38.3 deg)
     target_slope = np.tan(np.radians(38.3))
     x_ref = np.array([15, 55])
     y_ref = 32 - target_slope * (x_ref - 15)
-    ax_a.plot(x_ref, y_ref, color='#C0504D', linestyle='--', linewidth=1.8, label=r'38.3$^\circ$ Target Slope', zorder=4)
+    ax_a.plot(x_ref, y_ref, color=C_TARGET, linestyle='--', linewidth=1.5, label=r'38.3$^\circ$ Target Slope', zorder=4)
     
     finalize_plot(ax_a, '(a) Scale Convergence Profile', 'Radial Distance (mm)', 'Height (mm)')
     ax_a.legend(frameon=True, loc='upper right', facecolor='white', framealpha=0.9, edgecolor='none')
@@ -152,8 +151,7 @@ def generate_composite_calibration():
         ax_b.axis('off')
         ax_b.set_title('(b) Fitted Slope Profile (20k)', fontweight='bold', pad=12, color=C_TEXT)
     else:
-        # Fallback if image doesn't exist
-        ax_b.text(0.5, 0.5, 'aor_final_20k.png\n(Slope fitting profile)', ha='center', va='center', color=C_TEXT)
+        ax_b.text(0.5, 0.5, 'aor_final_20k.png\nnot found', ha='center', va='center', color=C_TEXT)
         ax_b.axis('off')
 
     # --------------------------------------------------------
@@ -167,7 +165,7 @@ def generate_composite_calibration():
         ax_c.axis('off')
         ax_c.set_title('(c) Settled 3D Heap (ParaView)', fontweight='bold', pad=12, color=C_TEXT)
     else:
-        ax_c.text(0.5, 0.5, 'paraview_20k.png\n(3D ParaView render)', ha='center', va='center', color=C_TEXT)
+        ax_c.text(0.5, 0.5, 'paraview_20k.png\nnot found', ha='center', va='center', color=C_TEXT)
         ax_c.axis('off')
 
     plt.tight_layout()
@@ -205,9 +203,12 @@ def generate_composite_flow_dynamics():
             has_data = True
             
     if has_data:
-        # Faint desaturated background bands for CN regimes
-        ax_a.axhspan(0, 1.2, color=C_FLOW_BG, alpha=0.6, label='Fluidized Zone (CN < 1.2)', zorder=1)
-        ax_a.axhspan(2.0, 5.0, color=C_JAM_BG, alpha=0.6, label='Jammed Zone (CN > 2.0)', zorder=1)
+        # Simple, ultra-clean horizontal dashed lines for CN regimes
+        ax_a.axhline(y=1.2, color='#64748B', linestyle=':', lw=1.0, zorder=2)
+        ax_a.text(0.05, 1.3, 'Fluidization Threshold (CN = 1.2)', fontsize=8, color='#64748B', style='italic')
+        
+        ax_a.axhline(y=2.0, color='#64748B', linestyle=':', lw=1.0, zorder=2)
+        ax_a.text(0.05, 2.1, 'Jammed Threshold (CN = 2.0)', fontsize=8, color='#64748B', style='italic')
         
         finalize_plot(ax_a, '(a) Bed State (Coordination Number)', 'Time (s)', 'Mean Coordination Number (CN)')
         ax_a.set_ylim(0, 4.2)
@@ -239,9 +240,9 @@ def generate_composite_flow_dynamics():
     bo_moon_low = f_vdw_low / (m_range * g_moon)
     bo_moon_high = f_vdw_high / (m_range * g_moon)
     
-    # Beautiful soft transparent fills
-    ax_b.fill_between(d_range * 1e6, bo_earth_low, bo_earth_high, alpha=0.10, color=C_EARTH, zorder=1)
-    ax_b.fill_between(d_range * 1e6, bo_moon_low, bo_moon_high, alpha=0.10, color=C_MOON, zorder=1)
+    # Ultra-soft transparent fills
+    ax_b.fill_between(d_range * 1e6, bo_earth_low, bo_earth_high, alpha=0.06, color=C_EARTH, zorder=1)
+    ax_b.fill_between(d_range * 1e6, bo_moon_low, bo_moon_high, alpha=0.06, color=C_MOON, zorder=1)
     
     ax_b.loglog(d_range * 1e6, bo_earth, label='Earth (9.81 m/s$^2$)', color=C_EARTH, lw=1.8, zorder=3)
     ax_b.loglog(d_range * 1e6, bo_moon, label='Moon (1.62 m/s$^2$)', color=C_MOON, lw=1.8, zorder=3)
@@ -252,7 +253,7 @@ def generate_composite_flow_dynamics():
     
     # Mark LMS-1 mean grain size (91 um)
     d_lms1 = 91.0
-    ax_b.axvline(x=d_lms1, color='#C0504D', linestyle='--', lw=1.2, label='LMS-1 Mean Size (91 $\mu$m)', zorder=2)
+    ax_b.axvline(x=d_lms1, color=C_TARGET, linestyle='--', lw=1.2, label='LMS-1 Mean Size (91 $\mu$m)', zorder=2)
     
     finalize_plot(ax_b, '(b) Analytical Granular Bond Number', 'Particle Diameter ($d$, $\mu$m)', 'Granular Bond Number ($Bo_g$)')
     ax_b.legend(frameon=True, loc='upper right', facecolor='white', framealpha=0.9, edgecolor='none')
@@ -294,7 +295,7 @@ def generate_composite_charging():
             
             ax_a.plot(data['times'], q_mean_uc, label=label, color=color, lw=1.8, zorder=3)
             ax_a.fill_between(data['times'], q_mean_uc - q_std_uc, q_mean_uc + q_std_uc, 
-                            color=color, alpha=0.08, lw=0, zorder=2)
+                            color=color, alpha=0.06, lw=0, zorder=2)
             has_a = True
             
     if has_a:
@@ -331,7 +332,7 @@ def generate_composite_charging():
                     kde_vals = kde.evaluate(x_eval)
                     
                     ax_b.plot(10**x_eval, kde_vals, color=color, lw=1.8, label=label, zorder=3)
-                    ax_b.fill_between(10**x_eval, 0, kde_vals, color=color, alpha=0.10, zorder=2)
+                    ax_b.fill_between(10**x_eval, 0, kde_vals, color=color, alpha=0.08, zorder=2)
                     has_b = True
                     
     if has_b:
@@ -358,22 +359,22 @@ def generate_composite_charging():
             x = np.arange(max(len(earth), len(moon)))
             width = 0.30
             
-            # Clean flat bars without harsh black borders
+            # Clean flat bars without edge outlines
             if len(earth) > 0:
                 ax_c.bar(x[:len(earth)] - width/2, earth['qm_ratio_ucg_final'], width, 
                        yerr=earth['qm_std_ucg_final'], capsize=3, 
                        error_kw={'alpha':0.5, 'lw':0.7, 'ecolor': C_TEXT},
-                       label='Earth (9.81 m/s$^2$)', color=C_EARTH, edgecolor=C_EARTH, lw=0.5, zorder=3)
+                       label='Earth (9.81 m/s$^2$)', color=C_EARTH, edgecolor='none', zorder=3)
                        
             if len(moon) > 0:
                 ax_c.bar(x[:len(moon)] + width/2, moon['qm_ratio_ucg_final'], width, 
                        yerr=moon['qm_std_ucg_final'], capsize=3, 
                        error_kw={'alpha':0.5, 'lw':0.7, 'ecolor': C_TEXT},
-                       label='Moon (1.62 m/s$^2$)', color=C_MOON, edgecolor=C_MOON, lw=0.5, zorder=3)
+                       label='Moon (1.62 m/s$^2$)', color=C_MOON, edgecolor='none', zorder=3)
             
-            # Shading for the Trigwell experimental benchmark range
-            ax_c.axhspan(0.45, 0.55, color=C_CREAM, alpha=0.8, label='Trigwell Target Range', zorder=1)
-            ax_c.axhline(y=0.5, color='#C0504D', linestyle='--', lw=1.2, alpha=0.8, zorder=2)
+            # Ultra-clean grey band for Trigwell experimental benchmark range
+            ax_c.axhspan(0.45, 0.55, color='#F1F5F9', alpha=0.7, label='Trigwell Target Range', zorder=1)
+            ax_c.axhline(y=0.5, color=C_TARGET, linestyle='--', lw=1.2, alpha=0.8, zorder=2)
             
             finalize_plot(ax_c, '(c) Final Charge-to-Mass Ratio ($Q/M$)', 'Vibration Amplitude (mm)', r'Average $Q/M$ ($\mu$C/g)')
             
@@ -395,7 +396,7 @@ def generate_composite_charging():
     print(f"[+] Saved composite charging figure to: {png_path} and {pdf_path}")
 
 if __name__ == "__main__":
-    print("[+] Starting Nature-style premium figure rebuild...")
+    print("[+] Starting high-tech premium figure rebuild...")
     generate_composite_calibration()
     generate_composite_flow_dynamics()
     generate_composite_charging()
