@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # =============================================================================
 # plot_publication.py — PUBLICATION-GRADE HIGH-TECH SCIENTIFIC JOURNAL FIGURES
-# Cohesive color system: Navy Blue (Earth), Rust Red (Moon Cohesive Jammed),
-# Emerald Teal (Moon Fluidized Active Flow).
+# Highly sophisticated desaturated Nature-grade color palette: Muted Steel Blue,
+# Soft Dusty Terracotta, and Gentle Sage Teal. Highly gentle on the human eye.
 # =============================================================================
 
 import numpy as np
@@ -19,15 +19,15 @@ results_dir = '/home/neo/liggghts/project/data'
 
 os.makedirs(output_dir, exist_ok=True)
 
-# --- Sleek High-Tech Color Tokens ---
-C_TEXT     = '#1E293B'  # Sleek Charcoal/Slate-900 (crisp high-contrast text)
-C_EARTH    = '#1A365D'  # Deep Slate Navy Blue (Terrestrial baseline)
-C_MOON     = '#C53030'  # Muted Rust/Brick Red (Cohesive jammed lunar condition)
-C_FLUID    = '#0D9488'  # Energetic Teal/Emerald (Active fluidized flow)
-C_TARGET   = '#EF4444'  # Crimson Red (crisp indicator/benchmark)
-C_GRID     = '#F1F5F9'  # Very soft, clean slate-100 grid lines
-C_SPINE    = '#CBD5E1'  # Clean border line color
-C_BG_ZONE  = '#F8FAFC'  # Very soft grey fill for threshold zones
+# --- Nature/Science-grade Muted Sophisticated Color Palette ---
+C_TEXT     = '#2D3142'  # Deep Slate/Charcoal (soft dark text)
+C_EARTH    = '#3D5A80'  # Muted Steel Blue (Terrestrial baseline)
+C_MOON     = '#C08272'  # Soft Dusty Terracotta/Rose (Cohesive jammed lunar)
+C_FLUID    = '#6C9A8B'  # Gentle Sage Teal (Active fluidized lunar flow)
+C_TARGET   = '#B56557'  # Soft Muted Brick/Crimson (Subtle benchmark/indicator)
+C_GRID     = '#F4F5F6'  # Almost invisible soft grey for gridlines
+C_SPINE    = '#D3D5D7'  # Soft titanium grey for axes spines
+C_BG_ZONE  = '#FAFBFB'  # Extremely soft background tint
 
 # --- Premium Global Matplotlib Styling ---
 plt.style.use('seaborn-v0_8-white')
@@ -106,7 +106,7 @@ def generate_composite_calibration():
         '5k Particles': '/home/neo/liggghts/project/research_attic/Angle of Repose/AoR_Calibration_Study/run_D1.0_S1/dump/final_positions.txt',
         '20k Particles': '/home/neo/liggghts/project/research_attic/Angle of Repose/Calibration_20k/dump/seed_1/final_positions.txt'
     }
-    colors = ['#38BDF8', '#1A365D']  # Modern bright blue vs premium dark navy
+    colors = ['#98C1D9', '#3D5A80']  # Muted soft sky blue vs desaturated steel blue
     
     has_a = False
     for i, (label, path) in enumerate(paths.items()):
@@ -220,10 +220,10 @@ def generate_composite_flow_dynamics():
             
     if has_data:
         # Simple, ultra-clean horizontal dashed lines for CN regimes
-        ax_a.axhline(y=1.2, color='#64748B', linestyle=':', lw=1.0, zorder=2)
+        ax_a.axhline(y=1.2, color='#94A3B8', linestyle=':', lw=1.0, zorder=2)
         ax_a.text(0.05, 1.3, 'Fluidization Threshold (CN = 1.2)', fontsize=8, color='#64748B', style='italic')
         
-        ax_a.axhline(y=2.0, color='#64748B', linestyle=':', lw=1.0, zorder=2)
+        ax_a.axhline(y=2.0, color='#94A3B8', linestyle=':', lw=1.0, zorder=2)
         ax_a.text(0.05, 2.1, 'Jammed Threshold (CN = 2.0)', fontsize=8, color='#64748B', style='italic')
         
         finalize_plot(ax_a, '(a) Bed State (Coordination Number)', 'Time (s)', 'Mean Coordination Number (CN)')
@@ -257,8 +257,8 @@ def generate_composite_flow_dynamics():
     bo_moon_high = f_vdw_high / (m_range * g_moon)
     
     # Ultra-soft transparent fills
-    ax_b.fill_between(d_range * 1e6, bo_earth_low, bo_earth_high, alpha=0.06, color=C_EARTH, zorder=1)
-    ax_b.fill_between(d_range * 1e6, bo_moon_low, bo_moon_high, alpha=0.06, color=C_MOON, zorder=1)
+    ax_b.fill_between(d_range * 1e6, bo_earth_low, bo_earth_high, alpha=0.04, color=C_EARTH, zorder=1)
+    ax_b.fill_between(d_range * 1e6, bo_moon_low, bo_moon_high, alpha=0.04, color=C_MOON, zorder=1)
     
     ax_b.loglog(d_range * 1e6, bo_earth, label='Earth (9.81 m/s$^2$)', color=C_EARTH, lw=1.8, zorder=3)
     ax_b.loglog(d_range * 1e6, bo_moon, label='Moon (1.62 m/s$^2$)', color=C_MOON, lw=1.8, zorder=3)
@@ -311,7 +311,7 @@ def generate_composite_charging():
             
             ax_a.plot(data['times'], q_mean_pc, label=label, color=color, lw=1.8, zorder=3)
             ax_a.fill_between(data['times'], q_mean_pc - q_std_pc, q_mean_pc + q_std_pc, 
-                            color=color, alpha=0.06, lw=0, zorder=2)
+                            color=color, alpha=0.04, lw=0, zorder=2)
             has_a = True
             
     if has_a:
@@ -348,7 +348,7 @@ def generate_composite_charging():
                     kde_vals = kde.evaluate(x_eval)
                     
                     ax_b.plot(10**x_eval, kde_vals, color=color, lw=1.8, label=label, zorder=3)
-                    ax_b.fill_between(10**x_eval, 0, kde_vals, color=color, alpha=0.08, zorder=2)
+                    ax_b.fill_between(10**x_eval, 0, kde_vals, color=color, alpha=0.04, zorder=2)
                     has_b = True
                     
     if has_b:
@@ -390,7 +390,7 @@ def generate_parametric_qm():
             if len(earth) > 0:
                 ax.bar(x[:len(earth)] - width/2, earth['qm_ratio_ucg_final'], width, 
                        yerr=earth['qm_std_ucg_final'], capsize=3, 
-                       error_kw={'alpha':0.5, 'lw':0.7, 'ecolor': C_TEXT},
+                       error_kw={'alpha':0.4, 'lw':0.7, 'ecolor': C_TEXT},
                        label='Earth (9.81 m/s$^2$)', color=C_EARTH, edgecolor='none', zorder=3)
                        
             if len(moon) > 0:
@@ -401,12 +401,12 @@ def generate_parametric_qm():
                     bar_x = x[idx] + width/2
                     ax.bar(bar_x, row.qm_ratio_ucg_final, width,
                            yerr=row.qm_std_ucg_final, capsize=3,
-                           error_kw={'alpha':0.5, 'lw':0.7, 'ecolor': C_TEXT},
+                           error_kw={'alpha':0.4, 'lw':0.7, 'ecolor': C_TEXT},
                            color=moon_colors[idx], edgecolor='none', zorder=3,
                            label='Moon (1.62 m/s$^2$)' if idx == 0 else "")
             
             # Ultra-clean grey band for Trigwell experimental benchmark range
-            ax.axhspan(0.45, 0.55, color='#F1F5F9', alpha=0.7, label='Trigwell Target Range', zorder=1)
+            ax.axhspan(0.45, 0.55, color='#F8FAFC', alpha=0.7, label='Trigwell Target Range', zorder=1)
             ax.axhline(y=0.5, color=C_TARGET, linestyle='--', lw=1.2, alpha=0.8, zorder=2)
             
             finalize_plot(ax, 'Final Charge-to-Mass Ratio ($Q/M$)', 'Vibration Amplitude (mm)', r'Average $Q/M$ ($\mu$C/g)')
