@@ -137,33 +137,25 @@ To identify the correct cohesion energy density $k_c$, we executed an iterative 
         v7 & 5,000 & $285,000\text{ J/m}^3$ & $31.0^\circ$ & $38.3^\circ \pm 2^\circ$ & Iteration showing boundary effects at 5k count. \\
         \textbf{v8 (Final)} & \textbf{20,000} & \textbf{$285,000\text{ J/m}^3$} & \textbf{$35.4^\circ$} & \textbf{$38.3^\circ \pm 2^\circ$} & Production validation run. Statistically converged average. \\ \hline
     \end{tabular}
-    }
 \end{table}
 
-To ensure statistical robustness and eliminate finite-size boundary effects, multi-scale convergence studies were conducted across populations of 5,000 and 20,000 particles. As illustrated in Figure \ref{fig:scale_convergence}, the repose angle exhibits a clear asymptotic scale dependence: the 5,000-particle baseline achieved an AoR of approximately 31.0$^\circ$, while scaling the domain to 20,000 particles resolved finite-size boundary clipping to perfectly match our mathematical convergence boundary.
+To ensure statistical robustness and eliminate finite-size boundary effects, multi-scale convergence studies were conducted across populations of 5,000 and 20,000 particles. As illustrated in Figure \ref{fig:composite_calibration}b, the repose angle exhibits a clear asymptotic scale dependence: the 5,000-particle baseline achieved an AoR of approximately 31.0$^\circ$, while scaling the domain to 20,000 particles resolved finite-size boundary clipping to perfectly match our mathematical convergence boundary.
 
-\begin{figure}[htbp]
+\begin{figure*}[t]
     \centering
-    \includegraphics[width=0.85\linewidth]{Figures/fig_1_3d_render.png}
-    \caption{\textbf{Three-dimensional granular rest state.} Reconstructed LIGGGHTS DEM coordinates of the calibrated $20,000$ particle settled conical heap under terrestrial gravity, showcasing the symmetric funnel-feed geometry.}
-    \label{fig:3d_render}
-\end{figure}
+    \includegraphics[width=\linewidth]{Figures/fig_composite_calibration.png}
+    \caption{\textbf{Granular cohesion calibration and conical heap profile convergence.} (a) Publication-grade 3D discrete element simulation render of the settled $20\text{k}$ conical regolith heap under terrestrial gravity, demonstrating uniform funnel-feed piling. (b) Scale convergence boundary tracking comparing the $5\text{k}$ and $20\text{k}$ radial profile outlines against the $38.3^\circ$ experimental target.}
+    \label{fig:composite_calibration}
+\end{figure*}
 
-\begin{figure}[htbp]
+A visual verification of the three-dimensional settled rest state is shown in Figure \ref{fig:composite_calibration}a. To systematically establish the calibration baseline, an iterative parameter sweep of repose angle against cohesion density was performed (Figure \ref{fig:composite_cohesion_cn}a). The experimental benchmark AoR of $38.3^\circ$ intersects the response curve precisely at $435,000\text{ J/m}^3$. This calibrated cohesion density was locked for all subsequent gravity-dependent feeder simulations, as cohesion is an invariant material property.
+
+\begin{figure*}[t]
     \centering
-    \includegraphics[width=0.85\linewidth]{Figures/fig_2_scale_convergence.png}
-    \caption{\textbf{Scale convergence boundary profiles.} Radial particle height profiles comparing the 95th-percentile outlines of the $5,000$ and $20,000$ particle systems against the physical $38.3^\circ$ target slope.}
-    \label{fig:scale_convergence}
-\end{figure}
-
-A visual verification of the three-dimensional settled rest state is shown in Figure \ref{fig:3d_render}. To systematically establish the calibration baseline, an iterative parameter sweep of repose angle against cohesion density was performed (Figure \ref{fig:cohesion_sweep}). The experimental benchmark AoR of $38.3^\circ$ intersects the response curve precisely at $435,000\text{ J/m}^3$. This calibrated cohesion density was locked for all subsequent gravity-dependent feeder simulations, as cohesion is an invariant material property.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.85\linewidth]{Figures/fig_3_cohesion_sweep.png}
-    \caption{\textbf{Granular cohesion energy density calibration sweep.} Measured repose angle as a function of the SJKR cohesion energy density $E_{\text{coh}}$, highlighting the precise intercept of the $38.3^\circ$ target at $435\text{ kJ/m}^3$.}
-    \label{fig:cohesion_sweep}
-\end{figure}
+    \includegraphics[width=\linewidth]{Figures/fig_composite_cohesion_cn.png}
+    \caption{\textbf{Cohesion sweep calibration and bed coordination number transient.} (a) Cohesion parameter sweep showing repose angle scaling with granular cohesion density ($E_{\text{coh}}$), calibrating our baseline target of $435\text{ kJ/m}^3$ to precisely replicate the experimental $38.3^\circ$ angle of repose. (b) Mean coordination number (CN) timeseries comparing steady fluidized flow regimes on Earth and the Moon against cohesive jammed states.}
+    \label{fig:composite_cohesion_cn}
+\end{figure*}
 
 \subsection{Triboelectric Charging Model}
 \label{sec:tribo_model}
@@ -219,54 +211,32 @@ d_{\text{crit}} = \left( \frac{6 \cdot F_{\mathrm{vdW}}}{\pi \cdot \rho \cdot g_
 \end{equation}
 This yields $d_{\text{crit, Earth}} \approx 99.8\ \mu\mathrm{m}$ and $d_{\text{crit, Moon}} \approx 181.3\ \mu\mathrm{m}$. Under lunar gravity, grains as large as $181.3\ \mu\mathrm{m}$ become cohesive, substantially widening the jamming window compared to Earth's $99.8\ \mu\mathrm{m}$ baseline.
 
-Figure \ref{fig:granular_bond} presents the analytical Granular Bond Number ($Bo_g$) scaling as a function of particle diameter under Earth and Moon gravity fields, demonstrating the gravity-dependent shift in critical diameter ($d_{\text{crit}}$) under varying van der Waals bounds.
+Figure \ref{fig:composite_bond_charge}a presents the analytical Granular Bond Number ($Bo_g$) scaling as a function of particle diameter under Earth and Moon gravity fields, demonstrating the gravity-dependent shift in critical diameter ($d_{\text{crit}}$) under varying van der Waals bounds.
 
-The transient bed fluidization state is diagnosed via the coordination number (CN) in LIGGGHTS, presented in Figure \ref{fig:coordination_number}. Under Earth gravity, a vibration amplitude of 2.0 mm is required to fully expand and fluidize the bed, reducing the coordination number to 1.19, whereas lower amplitudes (0.5 mm and 1.0 mm) remain partially jammed with high coordination numbers (2.30 and 1.86, respectively). On the Moon, due to the lower gravity, the bed dilates much more easily under vibration. This leads to a lower average coordination number of 1.14 at 0.5 mm amplitude, though the bed detaches from the feeder plate as an oscillating cohesive clump that undergoes minimal relative shearing. Doubling the lunar vibration amplitude to 2.0 mm successfully ruptures these cohesive contacts, yielding a dilated, fluidized bed with a coordination number of 0.68.
+The transient bed fluidization state is diagnosed via the coordination number (CN) in LIGGGHTS, presented in Figure \ref{fig:composite_cohesion_cn}b. Under Earth gravity, a vibration amplitude of 2.0 mm is required to fully expand and fluidize the bed, reducing the coordination number to 1.19, whereas lower amplitudes (0.5 mm and 1.0 mm) remain partially jammed with high coordination numbers (2.30 and 1.86, respectively). On the Moon, due to the lower gravity, the bed dilates much more easily under vibration. This leads to a lower average coordination number of 1.14 at 0.5 mm amplitude, though the bed detaches from the feeder plate as an oscillating cohesive clump that undergoes minimal relative shearing. Doubling the lunar vibration amplitude to 2.0 mm successfully ruptures these cohesive contacts, yielding a dilated, fluidized bed with a coordination number of 0.68.
 
-\begin{figure}[htbp]
+\begin{figure*}[t]
     \centering
-    \includegraphics[width=0.85\linewidth]{Figures/fig_4_coordination_number.png}
-    \caption{\textbf{Granular bed coordination number evolution.} Transient coordination number (CN) timeseries showing steady-state fluidization regimes on Earth and Moon compared against the cohesive jammed states. Shaded regimes indicate fluidization boundaries.}
-    \label{fig:coordination_number}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.85\linewidth]{Figures/fig_5_granular_bond.png}
-    \caption{\textbf{Analytical Granular Bond Number ($Bo_g$) scale dependence.} Log-log scaling of $Bo_g$ vs particle diameter under Earth ($9.81\text{ m/s}^2$) and Moon ($1.62\text{ m/s}^2$) gravity environments, marking the cohesive transition crossover ($Bo_g = 1.0$) and LMS-1 size.}
-    \label{fig:granular_bond}
-\end{figure}
+    \includegraphics[width=\linewidth]{Figures/fig_composite_bond_charge.png}
+    \caption{\textbf{Analytical scale scaling and transient charging history.} (a) Log-log scaling of the dimensionless Granular Bond Number ($Bo_g$) as a function of particle diameter under Earth ($9.81\text{ m/s}^2$) and Moon ($1.62\text{ m/s}^2$) gravity fields, highlighting the crossover threshold ($Bo_g = 1.0$) and the shift in critical cohesive particle size. (b) Transient average particle charge accumulation over time (with standard deviation envelopes in pC) under Earth and Moon gravity fields.}
+    \label{fig:composite_bond_charge}
+\end{figure*}
 
 \subsection{Energy-Charge Coupling and Triboelectrification}
 \label{sec:results_charging}
-The triboelectric charge accumulation is fundamentally coupled to the inter-particle and particle-wall collision energy. Figure \ref{fig:charge_history} and Figure \ref{fig:collision_energy} illustrate this coupling by integrating the transient charging history and the smooth collision energy distribution into standalone physical diagnostic panels.
+The triboelectric charge accumulation is fundamentally coupled to the inter-particle and particle-wall collision energy. Figure \ref{fig:composite_bond_charge}b and Figure \ref{fig:composite_energy_qm}a illustrate this coupling by integrating the transient charging history and the smooth collision energy distribution into standalone physical diagnostic panels.
 
-Specifically, Figure \ref{fig:collision_energy} presents the smooth Kernel Density Estimation (KDE) probability density functions of collision energies across the different gravity levels, replacing blocky histograms with high-fidelity analytical profiles. The six-fold reduction in gravity on the Moon directly translates to a significant reduction in the impact velocities during particle interactions. This shift in the energy PDF toward lower magnitudes results in a proportional decrease in the mechanical energy available to rupture surface charge states and drive triboelectric charge transfer ($\Delta E$).
+Specifically, Figure \ref{fig:composite_energy_qm}a presents the smooth Kernel Density Estimation (KDE) probability density functions of collision energies across the different gravity levels, replacing blocky histograms with high-fidelity analytical profiles. The six-fold reduction in gravity on the Moon directly translates to a significant reduction in the impact velocities during particle interactions. This shift in the energy PDF toward lower magnitudes results in a proportional decrease in the mechanical energy available to rupture surface charge states and drive triboelectric charge transfer ($\Delta E$).
 
-The transient charge accumulation over the duration of the simulation is shown in Figure \ref{fig:charge_history}. The macroscopic charge-to-mass ratio ($Q/M$) is highly sensitive to the imposed vibration amplitude, demonstrating a quantitative link between mechanical vibration, gravitational environment, and tribocharging performance. Under terrestrial conditions at a 1.0 mm amplitude, the model achieves a terminal $Q/M$ of 0.50 $\mu$C/g, which aligns accurately with the experimental benchmark established by \cite{Trigwell2009}. The successful replication of this terrestrial behavior validates the energy-based charging model ($Q = k_d E^n$) and provides confidence in the predictive capabilities of the lunar simulations.
+The transient charge accumulation over the duration of the simulation is shown in Figure \ref{fig:composite_bond_charge}b. The macroscopic charge-to-mass ratio ($Q/M$) is highly sensitive to the imposed vibration amplitude, demonstrating a quantitative link between mechanical vibration, gravitational environment, and tribocharging performance. Under terrestrial conditions at a 1.0 mm amplitude, the model achieves a terminal $Q/M$ of 0.50 $\mu$C/g, which aligns accurately with the experimental benchmark established by \cite{Trigwell2009}. The successful replication of this terrestrial behavior validates the energy-based charging model ($Q = k_d E^n$) and provides confidence in the predictive capabilities of the lunar simulations.
 
-When operating at an equivalent amplitude of 1.0 mm, the lunar simulation produces a significantly lower final charge-to-mass ratio of 0.16 $\mu$C/g, representing a severe 67\% reduction compared to the terrestrial baseline (0.50 $\mu$C/g). The $Q/M$ scaling behavior across the full parametric sweep is summarized in Figure \ref{fig:parametric_qm}. However, when the vibration amplitude is doubled to 2.0 mm, the lunar feeder achieves a final $Q/M$ of 0.51 $\mu$C/g. This successfully meets the 0.50 $\mu$C/g target benchmark established by \cite{Trigwell2009} for effective dry beneficiation, demonstrating that the six-fold reduction in gravity can be overcome by operating in a high-intensity vibration regime ($\ge 2.0$ mm) to supply sufficient mechanical energy to drive collision-induced charge transfer.
+When operating at an equivalent amplitude of 1.0 mm, the lunar simulation produces a significantly lower final charge-to-mass ratio of 0.16 $\mu$C/g, representing a severe 67\% reduction compared to the terrestrial baseline (0.50 $\mu$C/g). The $Q/M$ scaling behavior across the full parametric sweep is summarized in Figure \ref{fig:composite_energy_qm}b. However, when the vibration amplitude is doubled to 2.0 mm, the lunar feeder achieves a final $Q/M$ of 0.51 $\mu$C/g. This successfully meets the 0.50 $\mu$C/g target benchmark established by \cite{Trigwell2009} for effective dry dry beneficiation, demonstrating that the six-fold reduction in gravity can be overcome by operating in a high-intensity vibration regime ($\ge 2.0$ mm) to supply sufficient mechanical energy to drive collision-induced charge transfer.
 
-\begin{figure}[htbp]
+\begin{figure*}[t]
     \centering
-    \includegraphics[width=0.85\linewidth]{Figures/fig_6_charge_history.png}
-    \caption{\textbf{Transient mean charge accumulation history.} Charge accumulation per particle over time (including standard deviation envelopes in pico-Coulombs, pC) under Earth and Moon gravity fields at 1.0 mm amplitude.}
-    \label{fig:charge_history}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.85\linewidth]{Figures/fig_7_collision_energy.png}
-    \caption{\textbf{Collision Energy Probability Density Distribution (KDE).} Analytical probability densities of mechanical collision energies showing the shift and attenuation induced by the lunar reduced gravity field.}
-    \label{fig:collision_energy}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.85\linewidth]{Figures/fig_8_parametric_qm.png}
-    \caption{\textbf{Parametric charge-to-mass ratio ($Q/M$) sweep for terrestrial and lunar feeder designs.} Standalone scientific line sweep plotting the average final $Q/M$ ratio as a function of vibration amplitude, evaluated against the experimental Trigwell baseline range (shaded area).}
-    \label{fig:parametric_qm}
-\end{figure}
+    \includegraphics[width=\linewidth]{Figures/fig_composite_energy_qm.png}
+    \caption{\textbf{Mechanical collision energy distributions and parametric vibratory sweep.} (a) Analytical probability densities (KDE) of particle collision energies showing the shift and attenuation induced by the six-fold lunar gravity reduction. (b) Standalone parametric sweep plotting the average final charge-to-mass ratio ($Q/M$) as a function of vibration amplitude, evaluated against the experimental Trigwell baseline range (shaded area).}
+\end{figure*}
 
 The comprehensive results of the parametric study, correlating the gravitational environment, vibration amplitude, resulting triboelectric charge, and the final fluidization state, are detailed in Table \ref{tab:simulation_results}.
 
