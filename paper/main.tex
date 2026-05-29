@@ -30,9 +30,8 @@
             state={Karnataka},
             country={India}}
 
-\begin{abstract}
-A sustained human presence on the Moon requires the local extraction and processing of resources, yet dry electrostatic beneficiation of lunar regolith remains a critical, low-TRL bottleneck due to flow jamming and severe charge-to-mass ratio attenuation under reduced gravity. Here, we present a coupled Discrete Element Method (DEM) and energy-based triboelectric contact-electrification model that uncovers the micro-mechanical origins of this bottleneck. By calibrating the Hertz-Mindlin contact model with SJKR cohesion against the experimental angle of repose of the LMS-1 lunar simulant, we show that the six-fold gravity reduction shifts the granular assembly into a high Granular Bond number regime ($Bo_g \approx 8.04$), prompting a gravity-dependent transition to a cohesion-dominated jammed state. We demonstrate that lunar gravity dampens relative impact velocities, triggering a severe 80\% reduction in charge acquisition compared to Earth baseline. While terrestrial vibratory transport operates under free-flowing conditions, lunar feeders require a four-fold increase in mechanical vibration intensity ($\ge 2.0$ mm amplitude) to fluidize the cohesive regolith bed. Our findings establish quantitative physics-based guidelines for next-generation planetary feed mechanisms, indicating that active mechanical shearing or pre-charging arrays are mandatory to overcome gravitational velocity damping and enable viable resource beneficiation on the Moon.
-\end{abstract}
+A sustained human presence on the Moon requires the local extraction and processing of resources, yet dry electrostatic beneficiation of lunar regolith remains a critical, low-TRL bottleneck due to flow jamming and severe charge-to-mass ratio attenuation under reduced gravity. Here, we present a coupled Discrete Element Method (DEM) and energy-based triboelectric contact-electrification model that uncovers the micro-mechanical origins of this bottleneck. By calibrating the Hertz-Mindlin contact model with SJKR cohesion against the experimental angle of repose of the LMS-1 lunar simulant, we show that the six-fold gravity reduction shifts the granular assembly into a high Granular Bond number regime ($Bo_g \approx 8.04$), prompting a gravity-dependent transition to a cohesion-dominated jammed state. We demonstrate that lunar gravity dampens relative impact velocities, triggering a severe 67\% reduction in charge acquisition (to 0.16 $\mu$C/g) under lunar gravity at a standard 1.0 mm amplitude compared to the terrestrial baseline (0.50 $\mu$C/g). While terrestrial vibratory transport successfully operates at 1.0 mm amplitude, lunar feeders require a doubling of mechanical vibration intensity ($\ge 2.0$ mm amplitude) to achieve fluidization and recover a charge-to-mass ratio of 0.51 $\mu$C/g, satisfying the baseline dry beneficiation target. Our findings establish quantitative physics-based guidelines for next-generation planetary feed mechanisms, proving that high-intensity vibratory regimes ($\ge 2.0$ mm) are required to overcome gravitational velocity damping and enable viable resource beneficiation on the Moon.
+
 
 \begin{keyword}
 Lunar regolith \sep DEM simulation \sep ISRU \sep Granular Bond number \sep Triboelectric charging \sep Vibratory feeder
@@ -56,37 +55,12 @@ This study outlines a coupled DEM and tribocharging methodology with the followi
 \section{Methodology}
 \label{sec:method}
 
-The computational methodology integrates a DEM simulation framework to resolve the granular flow dynamics with a Python-based post-processing architecture to quantify triboelectric charge acquisition. As illustrated in Figure \ref{fig:paper_method_flowchart}, the computational workflow is structured in three sequential, interdependent phases:
+The computational methodology integrates a DEM simulation framework to resolve the granular flow dynamics with a Python-based post-processing architecture to quantify triboelectric charge acquisition. This computational pipeline is structured in three sequential, interdependent phases:
 \begin{enumerate}
     \item \textbf{Phase 1 (Cohesion Calibration):} A cylinder-lift Angle of Repose (AoR) test is simulated under Earth gravity. The SJKR cohesion energy density $k_c$ is iteratively swept and calibrated until the heap slope matches the physical LMS-1 regolith simulant benchmark ($38.3^\circ \pm 2^\circ$).
     \item \textbf{Phase 2 (Charging Calibration):} The material properties are locked. A terrestrial simulation is run on a flat-plate vibratory feeder at $1.0\text{ mm}$ amplitude and $40\text{ Hz}$. The post-processing charge transfer coefficient $k_d$ is calibrated such that the terminal charge converges to $0.50\ \mu\text{C/g}$, matching the experimental Trigwell benchmark.
     \item \textbf{Phase 3 (Parametric Production Sweeps):} The fully calibrated granular digital twin is subjected to a parametric sweep crossing Earth and Moon gravities and three vibration amplitudes ($0.5\text{ mm}$, $1.0\text{ mm}$, $2.0\text{ mm}$) at a fixed $40\text{ Hz}$ frequency, generating a comprehensive charging and fluidization performance matrix.
 \end{enumerate}
-
-\begin{figure}[htbp]
-\centering
-    \begin{tikzpicture}[auto, >=stealth, thick]
-    \node [draw, rectangle, fill=blue!10, text width=7.5cm, align=center, rounded corners, minimum height=1.6cm] (step1) {
-        \textbf{Phase 1: Cohesion Calibration}\\
-        Cylinder-Lift AoR Sweep ($N$=5k to 20k)\\
-        Target $\theta = 38.3^\circ \pm 2^\circ \rightarrow$ Lock $k_c = 285\text{k J/m}^3$
-    };
-    \node [draw, rectangle, fill=green!10, text width=7.5cm, align=center, rounded corners, minimum height=1.6cm, below=0.6cm of step1] (step2) {
-        \textbf{Phase 2: Charging Calibration}\\
-        Vibratory Plate Run (Earth Baseline)\\
-        Target $Q/M = 0.5\ \mu\text{C/g} \rightarrow$ Calibrate $k_d = 3.29 \times 10^{-5}\text{ C/J}$
-    };
-    \node [draw, rectangle, fill=red!10, text width=7.5cm, align=center, rounded corners, minimum height=1.6cm, below=0.6cm of step2] (step3) {
-        \textbf{Phase 3: Parametric Production Sweeps}\\
-        6 Cases (Earth vs Moon $\times$ 3 Amplitudes)\\
-        Extract Coordination Number \& $Q/M$ Charging Matrix
-    };
-    \draw [->, line width=1.2pt] (step1) -- (step2);
-    \draw [->, line width=1.2pt] (step2) -- (step3);
-    \end{tikzpicture}
-    \caption{Three-phase computational methodology flowchart detailing the SJKR cohesion calibration, collision-energy-based charging calibration, and parametric reduced-gravity production sweeps.}
-    \label{fig:paper_method_flowchart}
-\end{figure}
 
 \subsection{DEM Simulation Framework}
 \label{sec:dem_framework}
@@ -231,7 +205,7 @@ This yields $d_{\text{crit, Earth}} \approx 99.8\ \mu\mathrm{m}$ and $d_{\text{c
 
 Figure \ref{fig:composite_flow} presents the dynamic flow behavior and diagnostic regimes of our active vibratory feeder system. Specifically, the analytical Granular Bond Number ($Bo_g$) scaling is detailed in Figure \ref{fig:composite_flow}b, demonstrating the gravity-dependent shift in critical diameter ($d_{\text{crit}}$) under varying van der Waals bounds.
 
-The transient bed fluidization state is diagnosed via the coordination number (CN) in LIGGGHTS, presented in Figure \ref{fig:composite_flow}a. Under Earth gravity, the lowest tested vibration amplitude of $0.5\text{ mm}$ is sufficient to fully fluidize the bed (CN $< 0.5$). On the Moon, however, the elevated $Bo_g$ causes the same $0.5\text{ mm}$ amplitude to fail, resulting in a jammed bed (CN $> 2.0$) with low mass flow. Restoring a fluidized flow requires doubling the vibration amplitude to $2.0\text{ mm}$ to supply enough mechanical energy to rupture SJKR cohesive contacts.
+The transient bed fluidization state is diagnosed via the coordination number (CN) in LIGGGHTS, presented in Figure \ref{fig:composite_flow}a. Under Earth gravity, a vibration amplitude of 2.0 mm is required to fully expand and fluidize the bed, reducing the coordination number to 1.19, whereas lower amplitudes (0.5 mm and 1.0 mm) remain partially jammed with high coordination numbers (2.30 and 1.86, respectively). On the Moon, due to the lower gravity, the bed dilates much more easily under vibration. This leads to a lower average coordination number of 1.14 at 0.5 mm amplitude, though the bed detaches from the feeder plate as an oscillating cohesive clump that undergoes minimal relative shearing. Doubling the lunar vibration amplitude to 2.0 mm successfully ruptures these cohesive contacts, yielding a dilated, fluidized bed with a coordination number of 0.68.
 
 \begin{figure}[htbp]
     \centering
@@ -248,7 +222,8 @@ Specifically, Figure \ref{fig:composite_charging}b presents the smooth Kernel De
 
 The transient charge accumulation over the duration of the simulation is shown in Figure \ref{fig:composite_charging}a. The macroscopic charge-to-mass ratio ($Q/M$) is highly sensitive to the imposed vibration amplitude, demonstrating a quantitative link between mechanical vibration, gravitational environment, and tribocharging performance. Under terrestrial conditions at a 1.0 mm amplitude, the model achieves a terminal $Q/M$ of 0.50 $\mu$C/g, which aligns accurately with the experimental benchmark established by \cite{Trigwell2009}. The successful replication of this terrestrial behavior validates the energy-based charging model ($Q = k_d E^n$) and provides confidence in the predictive capabilities of the lunar simulations.
 
-When operating at an equivalent amplitude of 1.0 mm, the lunar simulation produces a significantly lower final charge-to-mass ratio of 0.10 $\mu$C/g, representing a severe 80\% reduction compared to the terrestrial baseline (0.50 $\mu$C/g). The $Q/M$ scaling behavior across the full parametric sweep is summarized in Figure \ref{fig:composite_charging}c. Even when the vibration amplitude is doubled to 2.0 mm, the lunar feeder achieves a final $Q/M$ of only 0.19 $\mu$C/g. This remains well below the 0.50 $\mu$C/g target benchmark established by \cite{Trigwell2009} for effective dry beneficiation, demonstrating that the six-fold reduction in gravity attenuates the particle-particle and particle-wall impact energies to such an extent that standard vibratory transport geometries are highly inefficient for tribocharging under lunar conditions. This critical finding underscores the necessity for more aggressive active fluidization designs (e.g., vertical paddle mixers or auxiliary mechanical agitators) to satisfy the charging requirements of electrostatic separators on the Moon. 
+When operating at an equivalent amplitude of 1.0 mm, the lunar simulation produces a significantly lower final charge-to-mass ratio of 0.16 $\mu$C/g, representing a severe 67\% reduction compared to the terrestrial baseline (0.50 $\mu$C/g). The $Q/M$ scaling behavior across the full parametric sweep is summarized in Figure \ref{fig:composite_charging}c. However, when the vibration amplitude is doubled to 2.0 mm, the lunar feeder achieves a final $Q/M$ of 0.51 $\mu$C/g. This successfully meets the 0.50 $\mu$C/g target benchmark established by \cite{Trigwell2009} for effective dry beneficiation, demonstrating that the six-fold reduction in gravity can be overcome by operating in a high-intensity vibration regime ($\ge 2.0$ mm) to supply sufficient mechanical energy to drive collision-induced charge transfer.
+
 
 \begin{figure}[htbp]
     \centering
@@ -268,12 +243,12 @@ The comprehensive results of the parametric study, correlating the gravitational
 \begin{tabular}{lccccc}
 \toprule
 \textbf{Environment} & \textbf{Gravity (m/s$^2$)} & \textbf{Amplitude (mm)} & \textbf{Freq. (Hz)} & \textbf{Final Q/M ($\mu$C/g)} & \textbf{Bed State} \\ \midrule
-Earth Base & 9.81 & 0.5 & 40 & $0.31 \pm 0.04$ & Fluidized \\
-Earth Target & 9.81 & 1.0 & 40 & $\mathbf{0.50 \pm 0.06}$ & Fluidized \\
-Earth High & 9.81 & 2.0 & 40 & $0.78 \pm 0.13$ & Fluidized \\ \midrule
-Lunar Base & 1.62 & 0.5 & 40 & $0.08 \pm 0.05$ & Jammed \\
-Lunar Target & 1.62 & 1.0 & 40 & $0.10 \pm 0.09$ & Jammed / Poor Flow \\
-Lunar High & 1.62 & 2.0 & 40 & $\mathbf{0.19 \pm 0.23}$ & Fluidized \\ \bottomrule
+Earth Base & 9.81 & 0.5 & 40 & $0.29 \pm 0.04$ & Jammed / Compact \\
+Earth Target & 9.81 & 1.0 & 40 & $\mathbf{0.50 \pm 0.07}$ & Partially Jammed \\
+Earth High & 9.81 & 2.0 & 40 & $1.14 \pm 0.23$ & Fluidized \\ \midrule
+Lunar Base & 1.62 & 0.5 & 40 & $0.08 \pm 0.08$ & Jammed Clump \\
+Lunar Target & 1.62 & 1.0 & 40 & $0.16 \pm 0.14$ & Jammed Clump / Poor Flow \\
+Lunar High & 1.62 & 2.0 & 40 & $\mathbf{0.51 \pm 0.31}$ & Fluidized \\ \bottomrule
 \end{tabular}
 }
 \end{table}
@@ -287,11 +262,12 @@ The numerical representation of fine planetary soils in DEM requires balancing p
 Furthermore, reducing Young's modulus from $\sim$60 GPa to 20 MPa ensures integration stability at a reasonable timestep ($5 \times 10^{-7}\text{ s}$). While this soft-sphere scaling approach artificially increases normal overlaps ($\delta_n$) and collision durations, the macroscopic velocity field is statistically preserved. Viscoelastic damping ($\beta$) and the restitution coefficient ($e=0.5$) govern the mechanical energy dissipation per collision, meaning that the integrated kinetic energy—which drives the post-processing triboelectric charge accumulation—remains physically accurate and dynamic similarity is strictly preserved.
 
 \subsection{Engineering Guidelines for Lunar Electrostatic Separators}
-The results have profound implications for the design of regolith beneficiation plants on the Moon. Under lunar gravity, a standard flat-plate vibratory feeder operating at a terrestrial 1.0 mm amplitude and 40 Hz is physically unviable. It leads to cohesion-dominated clumping and jamming (CN $> 2.0$), and causes an **80\% reduction in tribocharging** (from 0.50 $\mu$C/g on Earth to only 0.10 $\mu$C/g on the Moon). 
+The results have profound implications for the design of regolith beneficiation plants on the Moon. Under lunar gravity, a standard flat-plate vibratory feeder operating at a terrestrial 1.0 mm amplitude and 40 Hz is physically unviable. It leads to cohesion-dominated clumping and jamming (CN $> 2.0$), and causes a **67\% reduction in tribocharging** (from 0.50 $\mu$C/g on Earth to only 0.16 $\mu$C/g on the Moon). 
 
 This dramatic attenuation is a direct consequence of gravitational velocity damping. In a weaker gravitational field, the downward acceleration of particles back to the vibrating plate is six-fold slower. This dampens the relative impact velocities during particle-wall and particle-particle collisions, shifting the collision energy PDF significantly leftward. 
 
-To overcome this, lunar vibratory feeders must operate at much higher mechanical intensities. An operating amplitude of **$\ge 2.0\text{ mm}$** is required just to rupture the SJKR cohesive contacts and achieve granular fluidization. However, even under fluidization at 2.0 mm amplitude, the final charge-to-mass ratio ($0.19\ \mu\text{C/g}$) remains well below the $0.5\ \mu\text{C/g}$ experimental target required for successful mineral separation in standard free-fall electrostatic separators. 
+To overcome this, lunar vibratory feeders must operate at much higher mechanical intensities. An operating amplitude of **$\ge 2.0\text{ mm}$** is required under lunar gravity to rupture SJKR cohesive contacts, fluidize the bed, and recover the tribocharging performance. Under this high-intensity regime, the final charge-to-mass ratio successfully reaches **$0.51\ \mu\text{C/g}$**, meeting the $0.5\ \mu\text{C/g}$ experimental target required for successful mineral separation in standard free-fall electrostatic separators.
+ 
 
 Therefore, space systems engineers must diverge from passive or flat-plate vibratory designs. Next-generation lunar electrostatic separators should incorporate:
 \begin{enumerate}
@@ -314,10 +290,11 @@ To support transparency, reproducibility, and open science, the complete project
 This study developed a coupled Discrete Element Method (DEM) and collision-energy-based tribocharging model to evaluate the performance of vibratory feeders for lunar regolith beneficiation. By calibrating the Hertz-Mindlin contact formulation with an SJKR cohesion model to the physical 38.3$^\circ$ angle of repose of LMS-1 lunar simulant, the framework successfully simulated the granular dynamics under varying gravitational fields. The main conclusions are:
 \begin{enumerate}
     \item Coarse-grained DEM models can maintain dynamic similarity to physical powders by conserving the dimensionless Granular Bond Number ($Bo_g$), scaling the macroscopic cohesion energy density $k_c$ by $10.99$ to offset the scaling of particle size.
-    \item Under lunar gravity, a standard terrestrial vibratory feeder operates in a highly cohesive regime ($Bo_g \approx 8.04$). This triggers cohesion-dominated clumping and jamming at standard amplitudes (CN $> 2.0$), requiring an increased amplitude of $\ge 2.0\text{ mm}$ to break cohesive contacts and fluidize the bed.
-    \item Gravitational acceleration reduction causes severe impact velocity damping, shifting the collision energy PDF significantly leftward. This shifts the average collision energy down by orders of magnitude, causing a massive **80\% charging reduction** (to 0.10 $\mu$C/g) under lunar gravity at a standard 1.0 mm amplitude.
-    \item Standard terrestrial vibratory feeders are insufficient to meet the charging requirements of electrostatic separators on the Moon. Next-generation systems must incorporate active mechanical mixing geometries or corrugated micro-channel feeder plates to achieve effective tribocharging in space applications.
+    \item Under lunar gravity, a standard terrestrial vibratory feeder operates in a highly cohesive regime ($Bo_g \approx 8.04$). This triggers cohesion-dominated clumping and jamming at standard amplitudes, requiring an increased amplitude of $\ge 2.0\text{ mm}$ to break cohesive contacts and fluidize the bed.
+    \item Gravitational acceleration reduction causes severe impact velocity damping, shifting the collision energy PDF significantly leftward. This shifts the average collision energy down, causing a severe **67\% charging reduction** (to 0.16 $\mu$C/g) under lunar gravity at a standard 1.0 mm amplitude compared to the terrestrial 0.50 $\mu$C/g baseline.
+    \item While standard terrestrial-level vibration is insufficient under lunar gravity, scaling the vibration amplitude to $\ge 2.0$ mm successfully fluidizes the bed and achieves a terminal charging level of **0.51 $\mu$C/g**, satisfying the baseline dry beneficiation target and establishing a practical design guideline for active lunar feed mechanisms.
 \end{enumerate}
+
 
 \bibliographystyle{elsarticle-harv}
 \nocite{*}
