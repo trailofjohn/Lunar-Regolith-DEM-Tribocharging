@@ -3,7 +3,7 @@
 # plot_publication.py — PUBLICATION-GRADE HIGH-TECH SCIENTIFIC JOURNAL FIGURES
 # Minimalist, ultra-elegant Nature-grade palette: Slate Charcoal, Cool Grey, 
 # and a single Muted Slate Blue accent for active flow. Highly gentle on the eye.
-# Implements binned profile outlines and continuous parametric error-bar sweeps.
+# Implements asymmetric GridSpec ratios and advanced white-border auto-cropping.
 # =============================================================================
 
 import numpy as np
@@ -57,7 +57,7 @@ plt.rcParams.update({
 })
 
 def crop_and_load_image(img_path):
-    """Load an image and crop transparent or white borders to maximize display size."""
+    """Load an image and crop both transparent AND solid white borders to maximize display size."""
     if not os.path.exists(img_path):
         return None
     try:
@@ -65,10 +65,28 @@ def crop_and_load_image(img_path):
         if img.mode != 'RGBA':
             img = img.convert('RGBA')
         
-        # Simple bounding box crop for white/transparent borders
-        bbox = img.getbbox()
-        if bbox:
-            img = img.crop(bbox)
+        # Robustly find coordinates of all pixels that are NOT white and NOT transparent
+        data = np.array(img)
+        # Pixel is active if it's not white (any channel < 254) and not transparent (A > 10)
+        non_white = (data[:, :, 0] < 254) | (data[:, :, 1] < 254) | (data[:, :, 2] < 254)
+        non_transparent = data[:, :, 3] > 10
+        active_mask = non_white & non_transparent
+        
+        if np.any(active_mask):
+            rows = np.any(active_mask, axis=1)
+            cols = np.any(active_mask, axis=0)
+            ymin, ymax = np.where(rows)[0][[0, -1]]
+            xmin, xmax = np.where(cols)[0][[0, -1]]
+            
+            # Add minor safety padding (5 pixels) to avoid clipping text labels
+            pad = 5
+            ymin = max(0, ymin - pad)
+            ymax = min(data.shape[0], ymax + pad)
+            xmin = max(0, xmin - pad)
+            xmax = min(data.shape[1], xmax + pad)
+            
+            img = img.crop((xmin, ymin, xmax, ymax))
+            
         return np.array(img)
     except Exception as e:
         print(f"[-] Warning: Failed to process image {img_path}: {e}")
@@ -109,11 +127,12 @@ def compute_profile_outline(r, z, bin_width=4.0):
     return bin_centers, profile
 
 # =============================================================================
-# Figure 1: Cohesion Calibration & Repose Pile Convergence (4 Panels, 2x2 Grid)
+# Figure 1: Cohesion Calibration & Repose Pile Convergence (4 Panels, 2x2 Asymmetric Grid)
 # =============================================================================
 def generate_composite_calibration():
     print("Generating Composite Figure 1 (Calibration & Repose)...")
-    fig, axes = plt.subplots(2, 2, figsize=(11, 8.5))
+    # Use asymmetric GridSpec widths (1.0 vs 1.55) to give the wide panel (b) perfect scaling proportions
+    fig, axes = plt.subplots(2, 2, figsize=(11.5, 8.2), gridspec_kw={'width_ratios': [1.0, 1.55]})
     
     # --------------------------------------------------------
     # Panel (a): Scale Convergence from raw LIGGGHTS dumps
