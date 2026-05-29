@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # =============================================================================
 # plot_publication.py — PUBLICATION-GRADE HIGH-TECH SCIENTIFIC JOURNAL FIGURES
-# Ultra-modern sleek layout: Midnight Blue + Titanium Slate Grey + Pure White Canvas
+# Sleek cohesive color system: Navy Blue (Earth), Rust Red (Moon Cohesive Jammed),
+# Emerald Teal (Moon Fluidized Active Flow).
 # =============================================================================
 
 import numpy as np
@@ -20,8 +21,9 @@ os.makedirs(output_dir, exist_ok=True)
 
 # --- Sleek High-Tech Color Tokens ---
 C_TEXT     = '#1E293B'  # Sleek Charcoal/Slate-900 (crisp high-contrast text)
-C_EARTH    = '#0A2540'  # Deep Midnight Blue (Stripe-grade premium dark navy)
-C_MOON     = '#64748B'  # Slate Grey (Titanium/Lunar grey)
+C_EARTH    = '#1A365D'  # Deep Slate Navy Blue (Terrestrial baseline)
+C_MOON     = '#C53030'  # Muted Rust/Brick Red (Cohesive jammed lunar condition)
+C_FLUID    = '#0D9488'  # Energetic Teal/Emerald (Active fluidized flow)
 C_TARGET   = '#EF4444'  # Crimson Red (crisp indicator/benchmark)
 C_GRID     = '#F1F5F9'  # Very soft, clean slate-100 grid lines
 C_SPINE    = '#CBD5E1'  # Clean border line color
@@ -90,21 +92,21 @@ def finalize_plot(ax, title, xlabel, ylabel):
     ax.tick_params(colors=C_TEXT, width=0.6, length=4)
 
 # =============================================================================
-# Figure 1: Cohesion Calibration & Repose Pile Convergence (3 Panels)
+# Figure 1: Cohesion Calibration & Repose Pile Convergence (4 Panels, 2x2 Grid)
 # =============================================================================
 def generate_composite_calibration():
     print("Generating Composite Figure 1 (Calibration & Repose)...")
-    fig, axes = plt.subplots(1, 3, figsize=(14, 4.2))
+    fig, axes = plt.subplots(2, 2, figsize=(11, 8.5))
     
     # --------------------------------------------------------
     # Panel (a): Scale Convergence from raw LIGGGHTS dumps
     # --------------------------------------------------------
-    ax_a = axes[0]
+    ax_a = axes[0, 0]
     paths = {
         '5k Particles': '/home/neo/liggghts/project/research_attic/Angle of Repose/AoR_Calibration_Study/run_D1.0_S1/dump/final_positions.txt',
         '20k Particles': '/home/neo/liggghts/project/research_attic/Angle of Repose/Calibration_20k/dump/seed_1/final_positions.txt'
     }
-    colors = ['#38BDF8', '#0284C7']  # Clean modern cool blues
+    colors = ['#38BDF8', '#1A365D']  # Modern bright blue vs premium dark navy
     
     has_a = False
     for i, (label, path) in enumerate(paths.items()):
@@ -143,7 +145,7 @@ def generate_composite_calibration():
     # --------------------------------------------------------
     # Panel (b): Fitted cross-sectional profile (aor_final_20k)
     # --------------------------------------------------------
-    ax_b = axes[1]
+    ax_b = axes[0, 1]
     profile_img_path = os.path.join(output_dir, 'aor_final_20k.png')
     img_b = crop_and_load_image(profile_img_path)
     if img_b is not None:
@@ -155,18 +157,32 @@ def generate_composite_calibration():
         ax_b.axis('off')
 
     # --------------------------------------------------------
-    # Panel (c): 3D settled rest piles (paraview_20k)
+    # Panel (c): 3D settled rest pile for 5k particles
     # --------------------------------------------------------
-    ax_c = axes[2]
-    pv_img_path = os.path.join(output_dir, 'paraview_20k.png')
-    img_c = crop_and_load_image(pv_img_path)
+    ax_c = axes[1, 0]
+    pv_5k_path = os.path.join(output_dir, 'paraview_5k.png')
+    img_c = crop_and_load_image(pv_5k_path)
     if img_c is not None:
         ax_c.imshow(img_c)
         ax_c.axis('off')
-        ax_c.set_title('(c) Settled 3D Heap (ParaView)', fontweight='bold', pad=12, color=C_TEXT)
+        ax_c.set_title('(c) 5k Conical Heap (ParaView)', fontweight='bold', pad=12, color=C_TEXT)
     else:
-        ax_c.text(0.5, 0.5, 'paraview_20k.png\nnot found', ha='center', va='center', color=C_TEXT)
+        ax_c.text(0.5, 0.5, 'paraview_5k.png\nnot found', ha='center', va='center', color=C_TEXT)
         ax_c.axis('off')
+
+    # --------------------------------------------------------
+    # Panel (d): 3D settled rest pile for 20k particles
+    # --------------------------------------------------------
+    ax_d = axes[1, 1]
+    pv_20k_path = os.path.join(output_dir, 'paraview_20k.png')
+    img_d = crop_and_load_image(pv_20k_path)
+    if img_d is not None:
+        ax_d.imshow(img_d)
+        ax_d.axis('off')
+        ax_d.set_title('(d) 20k Conical Heap (ParaView)', fontweight='bold', pad=12, color=C_TEXT)
+    else:
+        ax_d.text(0.5, 0.5, 'paraview_20k.png\nnot found', ha='center', va='center', color=C_TEXT)
+        ax_d.axis('off')
 
     plt.tight_layout()
     
@@ -191,7 +207,7 @@ def generate_composite_flow_dynamics():
     cases = {
         "E_A05": (C_EARTH, ':', 'Earth 0.5mm (Jammed / Compact)'), 
         "M_A05": (C_MOON, '-', 'Moon 0.5mm (Jammed Clump)'), 
-        "M_A20": (C_MOON, '--', 'Moon 2.0mm (Fluidized Flow)')
+        "M_A20": (C_FLUID, '--', 'Moon 2.0mm (Fluidized Flow)')
     }
     
     has_data = False
@@ -287,21 +303,21 @@ def generate_composite_charging():
         data_path = os.path.join(results_dir, f"{case}_data.npz")
         if os.path.exists(data_path):
             data = np.load(data_path)
-            q_mean_uc = data['q_history'] * 1e6
-            q_std_uc = data['q_std_history'] * 1e6
+            q_mean_pc = data['q_history'] * 1e12
+            q_std_pc = data['q_std_history'] * 1e12
             
             color = C_EARTH if 'E' in case else C_MOON
             label = 'Earth 1.0mm (Terrestrial)' if 'E' in case else 'Moon 1.0mm (Lunar)'
             
-            ax_a.plot(data['times'], q_mean_uc, label=label, color=color, lw=1.8, zorder=3)
-            ax_a.fill_between(data['times'], q_mean_uc - q_std_uc, q_mean_uc + q_std_uc, 
+            ax_a.plot(data['times'], q_mean_pc, label=label, color=color, lw=1.8, zorder=3)
+            ax_a.fill_between(data['times'], q_mean_pc - q_std_pc, q_mean_pc + q_std_pc, 
                             color=color, alpha=0.06, lw=0, zorder=2)
             has_a = True
             
     if has_a:
-        finalize_plot(ax_a, '(a) Charge Accumulation History', 'Time (s)', r'Avg. Particle Charge $q$ ($\mu$C)')
+        finalize_plot(ax_a, '(a) Charge Accumulation History', 'Time (s)', r'Avg. Particle Charge $q$ (pC)')
         ax_a.legend(frameon=True, loc='upper left', facecolor='white', framealpha=0.9, edgecolor='none')
-        ax_a.set_ylim(0, 0.6)
+        ax_a.set_ylim(0, 1000)
     else:
         ax_a.text(0.5, 0.5, 'Charge history data\nnot found', ha='center', va='center', color=C_TEXT)
 
@@ -367,10 +383,16 @@ def generate_composite_charging():
                        label='Earth (9.81 m/s$^2$)', color=C_EARTH, edgecolor='none', zorder=3)
                        
             if len(moon) > 0:
-                ax_c.bar(x[:len(moon)] + width/2, moon['qm_ratio_ucg_final'], width, 
-                       yerr=moon['qm_std_ucg_final'], capsize=3, 
-                       error_kw={'alpha':0.5, 'lw':0.7, 'ecolor': C_TEXT},
-                       label='Moon (1.62 m/s$^2$)', color=C_MOON, edgecolor='none', zorder=3)
+                # Use C_FLUID for Moon 2.0mm to show fluidization rescue, C_MOON for lower amplitudes
+                moon_colors = [C_MOON, C_MOON, C_FLUID]
+                for idx, row in enumerate(moon.itertuples()):
+                    # We plot each bar individually to support our premium multi-color theme
+                    bar_x = x[idx] + width/2
+                    ax_c.bar(bar_x, row.qm_ratio_ucg_final, width,
+                           yerr=row.qm_std_ucg_final, capsize=3,
+                           error_kw={'alpha':0.5, 'lw':0.7, 'ecolor': C_TEXT},
+                           color=moon_colors[idx], edgecolor='none', zorder=3,
+                           label='Moon (1.62 m/s$^2$)' if idx == 0 else "")
             
             # Ultra-clean grey band for Trigwell experimental benchmark range
             ax_c.axhspan(0.45, 0.55, color='#F1F5F9', alpha=0.7, label='Trigwell Target Range', zorder=1)
