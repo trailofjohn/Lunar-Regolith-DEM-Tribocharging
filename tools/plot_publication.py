@@ -3,7 +3,7 @@
 # plot_publication.py — PUBLICATION-GRADE HIGH-TECH SCIENTIFIC JOURNAL FIGURES
 # Minimalist, ultra-elegant Nature-grade palette: Slate Charcoal, Cool Grey, 
 # and a single Muted Slate Blue accent for active flow. Highly gentle on the eye.
-# Implements physical rolling-average smoothing to eliminate ink-splatter noise.
+# Implements binned profile outlines and continuous parametric error-bar sweeps.
 # =============================================================================
 
 import numpy as np
@@ -92,6 +92,22 @@ def finalize_plot(ax, title, xlabel, ylabel):
     ax.grid(True, linestyle='-', color=C_GRID, linewidth=0.5, zorder=0)
     ax.tick_params(colors=C_TEXT, width=0.6, length=4)
 
+def compute_profile_outline(r, z, bin_width=4.0):
+    """Compute the smooth 95th-percentile structural outline of the conical heap."""
+    bins = np.arange(0, 100, bin_width)
+    bin_centers = bins[:-1] + bin_width / 2.0
+    profile = []
+    for left, right in zip(bins[:-1], bins[1:]):
+        mask = (r >= left) & (r < right)
+        if np.sum(mask) > 10:
+            # Use 95th percentile height to avoid flying outlier particles
+            profile.append(np.percentile(z[mask], 95))
+        else:
+            profile.append(0.0)
+    # Smooth the curve gently
+    profile = pd.Series(profile).rolling(window=3, min_periods=1, center=True).mean().to_numpy()
+    return bin_centers, profile
+
 # =============================================================================
 # Figure 1: Cohesion Calibration & Repose Pile Convergence (4 Panels, 2x2 Grid)
 # =============================================================================
@@ -125,18 +141,24 @@ def generate_composite_calibration():
                             data.append([float(parts[2]), float(parts[3]), float(parts[4])])
             data = np.array(data)
             if len(data) > 0:
-                indices = np.random.choice(len(data), min(len(data), 1500), replace=False)
-                x, y, z = data[indices, 0], data[indices, 1], data[indices, 2]
+                x, y, z = data[:, 0], data[:, 1], data[:, 2]
                 r = np.sqrt(x**2 + y**2) * 1000  # to mm
                 z_mm = z * 1000
-                ax_a.scatter(r, z_mm, s=1.5, alpha=0.3, color=colors[i], label=label, rasterized=True, zorder=3)
+                
+                # Scatter raw particles as extremely soft background dust
+                indices = np.random.choice(len(data), min(len(data), 1200), replace=False)
+                ax_a.scatter(r[indices], z_mm[indices], s=1.2, alpha=0.06, color=colors[i], rasterized=True, zorder=2)
+                
+                # Calculate and overlay beautiful, crisp, smooth structural outlines
+                bin_centers, outline = compute_profile_outline(r, z_mm)
+                ax_a.plot(bin_centers, outline, color=colors[i], lw=2.0, label=label, zorder=3)
                 has_a = True
                 
     # Add target slope line (38.3 deg)
     target_slope = np.tan(np.radians(38.3))
     x_ref = np.array([15, 55])
     y_ref = 32 - target_slope * (x_ref - 15)
-    ax_a.plot(x_ref, y_ref, color=C_TARGET, linestyle='--', linewidth=1.5, label=r'38.3$^\circ$ Target Slope', zorder=4)
+    ax_a.plot(x_ref, y_ref, color='#E53E3E', linestyle='--', linewidth=1.5, label=r'38.3$^\circ$ Target Slope', zorder=4)
     
     finalize_plot(ax_a, '(a) Scale Convergence Profile', 'Radial Distance (mm)', 'Height (mm)')
     ax_a.legend(frameon=True, loc='upper right', facecolor='white', framealpha=0.9, edgecolor='none')
@@ -223,7 +245,7 @@ def generate_composite_flow_dynamics():
             cn_smooth = pd.Series(cn).rolling(window=100, min_periods=1, center=True).mean().to_numpy()
             
             # Faint background raw envelope
-            ax_a.plot(times, cn, color=color, alpha=0.10, lw=0.5, zorder=2)
+            ax_a.plot(times, cn, color=color, alpha=0.08, lw=0.5, zorder=2)
             
             # Clean, bold physical trend line
             ax_a.plot(times, cn_smooth, label=label, color=color, linestyle=ls, lw=2.0, zorder=3)
@@ -267,9 +289,9 @@ def generate_composite_flow_dynamics():
     bo_moon_low = f_vdw_low / (m_range * g_moon)
     bo_moon_high = f_vdw_high / (m_range * g_moon)
     
-    # Ultra-soft transparent fills
-    ax_b.fill_between(d_range * 1e6, bo_earth_low, bo_earth_high, alpha=0.04, color=C_EARTH, zorder=1)
-    ax_b.fill_between(d_range * 1e6, bo_moon_low, bo_moon_high, alpha=0.04, color=C_MOON, zorder=1)
+    # Ultra-soft transparent fills (improved opacity to 0.06 for better structure)
+    ax_b.fill_between(d_range * 1e6, bo_earth_low, bo_earth_high, alpha=0.06, color=C_EARTH, zorder=1)
+    ax_b.fill_between(d_range * 1e6, bo_moon_low, bo_moon_high, alpha=0.06, color=C_MOON, zorder=1)
     
     ax_b.loglog(d_range * 1e6, bo_earth, label='Earth (9.81 m/s$^2$)', color=C_EARTH, lw=1.8, zorder=3)
     ax_b.loglog(d_range * 1e6, bo_moon, label='Moon (1.62 m/s$^2$)', color=C_MOON, lw=1.8, zorder=3)
@@ -322,7 +344,7 @@ def generate_composite_charging():
             
             ax_a.plot(data['times'], q_mean_pc, label=label, color=color, lw=1.8, zorder=3)
             ax_a.fill_between(data['times'], q_mean_pc - q_std_pc, q_mean_pc + q_std_pc, 
-                            color=color, alpha=0.04, lw=0, zorder=2)
+                            color=color, alpha=0.08, lw=0, zorder=2)
             has_a = True
             
     if has_a:
@@ -359,7 +381,7 @@ def generate_composite_charging():
                     kde_vals = kde.evaluate(x_eval)
                     
                     ax_b.plot(10**x_eval, kde_vals, color=color, lw=1.8, label=label, zorder=3)
-                    ax_b.fill_between(10**x_eval, 0, kde_vals, color=color, alpha=0.04, zorder=2)
+                    ax_b.fill_between(10**x_eval, 0, kde_vals, color=color, alpha=0.08, zorder=2)
                     has_b = True
                     
     if has_b:
@@ -394,37 +416,32 @@ def generate_parametric_qm():
         moon = df[df['gravity'] == 'Moon']
         
         if len(earth) > 0 or len(moon) > 0:
-            x = np.arange(max(len(earth), len(moon)))
-            width = 0.30
-            
-            # Clean flat bars without edge outlines
-            if len(earth) > 0:
-                ax.bar(x[:len(earth)] - width/2, earth['qm_ratio_ucg_final'], width, 
-                       yerr=earth['qm_std_ucg_final'], capsize=3, 
-                       error_kw={'alpha':0.4, 'lw':0.7, 'ecolor': C_TEXT},
-                       label='Earth (9.81 m/s$^2$)', color=C_EARTH, edgecolor='none', zorder=3)
-                       
-            if len(moon) > 0:
-                # Use C_FLUID for Moon 2.0mm to show fluidization rescue, C_MOON for lower amplitudes
-                moon_colors = [C_MOON, C_MOON, C_FLUID]
-                for idx, row in enumerate(moon.itertuples()):
-                    # We plot each bar individually to support our premium multi-color theme
-                    bar_x = x[idx] + width/2
-                    ax.bar(bar_x, row.qm_ratio_ucg_final, width,
-                           yerr=row.qm_std_ucg_final, capsize=3,
-                           error_kw={'alpha':0.4, 'lw':0.7, 'ecolor': C_TEXT},
-                           color=moon_colors[idx], edgecolor='none', zorder=3,
-                           label='Moon (1.62 m/s$^2$)' if idx == 0 else "")
-            
             # Ultra-clean grey band for Trigwell experimental benchmark range
-            ax.axhspan(0.45, 0.55, color='#F8FAFC', alpha=0.7, label='Trigwell Target Range', zorder=1)
-            ax.axhline(y=0.5, color=C_TARGET, linestyle='--', lw=1.2, alpha=0.8, zorder=2)
+            ax.axhspan(0.45, 0.55, color='#F8FAFC', alpha=0.8, label='Trigwell Target Range', zorder=1)
+            ax.axhline(y=0.5, color=C_TARGET, linestyle='--', lw=1.2, alpha=0.6, zorder=2)
+            
+            # Plot continuous parametric sweep as elegant desaturated scientific line sweep curves
+            if len(earth) > 0:
+                ax.errorbar(earth['amplitude'], earth['qm_ratio_ucg_final'], yerr=earth['qm_std_ucg_final'],
+                            fmt='o-', color=C_EARTH, label='Earth (9.81 m/s$^2$)', lw=1.8, elinewidth=1.0, 
+                            capsize=3, markersize=6, zorder=3)
+                            
+            if len(moon) > 0:
+                # Plot lunar line sweep. Highlight the fluidized point at 2.0 mm with Moon Fluidized color.
+                ax.errorbar(moon['amplitude'], moon['qm_ratio_ucg_final'], yerr=moon['qm_std_ucg_final'],
+                            fmt='s--', color=C_MOON, label='Moon (1.62 m/s$^2$)', lw=1.8, elinewidth=1.0,
+                            capsize=3, markersize=6, zorder=3)
+                            
+                # Specially mark the rescue fluidization crossover amplitude (2.0 mm) with a fluid highlight marker
+                fluid_pt = moon[moon['amplitude'] == 2.0]
+                if len(fluid_pt) > 0:
+                    ax.scatter(fluid_pt['amplitude'], fluid_pt['qm_ratio_ucg_final'], color=C_FLUID, 
+                               s=80, marker='s', edgecolors=C_FLUID, zorder=4, label='Active Fluidized Rescued Point')
             
             finalize_plot(ax, 'Final Charge-to-Mass Ratio ($Q/M$)', 'Vibration Amplitude (mm)', r'Average $Q/M$ ($\mu$C/g)')
             
-            labels = earth['amplitude'].tolist() if len(earth) > 0 else moon['amplitude'].tolist()
-            ax.set_xticks(x[:len(labels)])
-            ax.set_xticklabels(labels)
+            ax.set_xticks([0.5, 1.0, 2.0])
+            ax.set_xticklabels(['0.5', '1.0', '2.0'])
             ax.set_ylim(0, 1.4)
             ax.legend(frameon=True, loc='upper left', facecolor='white', framealpha=0.9, edgecolor='none')
     else:
